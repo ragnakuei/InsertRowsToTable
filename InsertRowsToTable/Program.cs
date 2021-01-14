@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace InsertRowsToTable
 {
@@ -6,23 +8,9 @@ namespace InsertRowsToTable
     {
         public static void Main(string[] args)
         {
-            var templateTable = new Table
-            {
-                TableRows = new List<TableRow>
-                                                {
-                                                    // Title
-                                                    new TableRow { 欄位標題  = "欄位標題", 類型    = "類型", 欄位標題1 = "欄位標題1", 欄位標題2 = "欄位標題2", 欄位標題3 = "欄位標題3", },
-
-                                                    // 中間為資料列：先放 固定類型s 再放 手輸類型s
-
-                                                    // 最下面為備註列
-                                                    new TableRow { 欄位標題 = "備註", 類型 = String.Empty, 欄位標題1 = String.Empty, 欄位標題2 = String.Empty, 欄位標題3 = String.Empty, },
-                                                }
-            };
-
             var vm = new ViewModel
-            {
-                固定類型s = new Row[]
+                     {
+                         固定類型s = new Row[]
                                  {
                                      new Row
                                      {
@@ -55,7 +43,7 @@ namespace InsertRowsToTable
                                                }
                                      },
                                  },
-                手輸類型s = new Row[]
+                         手輸類型s = new Row[]
                                  {
                                      new Row
                                      {
@@ -74,19 +62,37 @@ namespace InsertRowsToTable
                                                {
                                                    new 類型 { Name = "低", 數據 = new 數據 { 欄位標題1 = "手輸欄位值 B1", 欄位標題2 = "手輸欄位值 B2", 欄位標題3 = "手輸欄位值 B3" } },
                                                    new 類型 { Name = "中", 數據 = new 數據 { 欄位標題1 = "手輸欄位值 B4", 欄位標題2 = "手輸欄位值 B5", 欄位標題3 = "手輸欄位值 B6" } },
-                                                   new 類型 { Name = "高", 數據 = new 數據 { 欄位標題1  = "手輸欄位值 B7", 欄位標題2 = "手輸欄位值 B8", 欄位標題3 = "手輸欄位值 B9" } },
+                                                   new 類型 { Name = "高", 數據 = new 數據 { 欄位標題1 = "手輸欄位值 B7", 欄位標題2 = "手輸欄位值 B8", 欄位標題3 = "手輸欄位值 B9" } },
                                                },
                                      },
                                  }
-            };
+                     };
 
-            Table塞資料方式_由上而下(templateTable, vm);
-            // Table塞資料方式_由下而上(templateTable, vm);
-
-            PrintTable(templateTable);
+            var table1 = Table塞資料方式_由上而下(GenerateTemplateTable(), vm);
+            PrintTable(table1);
+            Console.WriteLine("----------------------------------------------------");
+            var table2 = Table塞資料方式_由下而上(GenerateTemplateTable(), vm);
+            PrintTable(table2);
         }
 
-        private static void Table塞資料方式_由上而下(Table templateTable, ViewModel vm)
+        private static Table GenerateTemplateTable()
+        {
+            return new Table
+                   {
+                       TableRows = new List<TableRow>
+                                   {
+                                       // Title
+                                       new TableRow { 欄位標題 = "欄位標題", 類型 = "類型", 欄位標題1 = "欄位標題1", 欄位標題2 = "欄位標題2", 欄位標題3 = "欄位標題3", },
+
+                                       // 中間為資料列：先放 固定類型s 再放 手輸類型s
+
+                                       // 最下面為備註列
+                                       new TableRow { 欄位標題 = "備註", 類型 = String.Empty, 欄位標題1 = String.Empty, 欄位標題2 = String.Empty, 欄位標題3 = String.Empty, },
+                                   }
+                   };
+        }
+
+        private static Table Table塞資料方式_由上而下(Table templateTable, ViewModel vm)
         {
             var rowDataStartIndex = 1;
 
@@ -109,9 +115,11 @@ namespace InsertRowsToTable
                     templateTable.TableRows.Insert(rowDataStartIndex++, ToTableRow(row, 類型));
                 }
             }
+
+            return templateTable;
         }
 
-        private static void Table塞資料方式_由下而上(Table templateTable, ViewModel vm)
+        private static Table Table塞資料方式_由下而上(Table templateTable, ViewModel vm)
         {
             var rowDataStartIndex = 1;
 
@@ -134,18 +142,20 @@ namespace InsertRowsToTable
                     templateTable.TableRows.Insert(rowDataStartIndex, ToTableRow(row, 類型));
                 }
             }
+
+            return templateTable;
         }
 
         private static TableRow ToTableRow(Row row, 類型 類型)
         {
             return new TableRow
-            {
-                欄位標題 = row.欄位標題,
-                類型 = 類型.Name,
-                欄位標題1 = 類型.數據.欄位標題1,
-                欄位標題2 = 類型.數據.欄位標題2,
-                欄位標題3 = 類型.數據.欄位標題3,
-            };
+                   {
+                       欄位標題  = row.欄位標題,
+                       類型    = 類型.Name,
+                       欄位標題1 = 類型.數據.欄位標題1,
+                       欄位標題2 = 類型.數據.欄位標題2,
+                       欄位標題3 = 類型.數據.欄位標題3,
+                   };
         }
 
         private static void PrintTable(Table templateTable)
@@ -204,5 +214,4 @@ namespace InsertRowsToTable
 
         public string 欄位標題3 { get; set; }
     }
-
 }
